@@ -11,6 +11,8 @@ import {
   Migration,
 } from "./types"
 
+const DEFAULT_MIGRATION_TABLE_NAME = "migrations"
+
 export async function migrate(
   dbConfig: MigrateDBConfig,
   migrationsDirectory: string,
@@ -29,6 +31,9 @@ export async function migrate(
   if (typeof migrationsDirectory !== "string") {
     throw new Error("Must pass migrations directory as a string")
   }
+  if (dbConfig.tableName === undefined) {
+    ;(dbConfig as any).tableName = DEFAULT_MIGRATION_TABLE_NAME
+  }
 
   return runMigrations(dbConfig, migrationsDirectory, config)
 }
@@ -45,8 +50,6 @@ async function runMigrations(
           //
         }
 
-  const migrationTableName = "migrations"
-
   const client = new pg.Client(dbConfig)
 
   client.on("error", err => {
@@ -59,10 +62,10 @@ async function runMigrations(
     await client.connect()
     log("Connected to database")
 
-    const migrations = await load(migrationsDirectory, log)
+    const migrations = await load(migrationsDirectory, log, dbConfig)
 
     const appliedMigrations = await fetchAppliedMigrationFromDB(
-      migrationTableName,
+      dbConfig.tableName!,
       client,
       log,
     )
@@ -74,7 +77,7 @@ async function runMigrations(
     const completedMigrations = []
 
     for (const migration of filteredMigrations) {
-      const result = await runMigration(migrationTableName, client, log)(
+      const result = await runMigration(dbConfig.tableName!, client, log)(
         migration,
       )
       completedMigrations.push(result)

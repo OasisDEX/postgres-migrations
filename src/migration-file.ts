@@ -58,4 +58,24 @@ Offending file: '${fileName}'.`)
   }
 }
 
+export const loadRaw = (fileName: string, contents: string) => {
+  try {
+    const {id, name} = parseFileName(fileName)
+    const hash = hashString(fileName + contents)
+
+    return {
+      id,
+      name,
+      contents,
+      fileName,
+      hash,
+      sql: contents,
+    }
+  } catch (err) {
+    throw new Error(`
+${err.message}
+Offending file: '${fileName}'.`)
+  }
+}
+
 // module.exports._fileNameParser = fileNameParser

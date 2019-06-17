@@ -1,5 +1,5 @@
 {
-  "name": "postgres-migrations",
+  "name": "postgres-migrations-oasis",
   "version": "3.0.2",
   "description": "Stack Overflow style database migrations for PostgreSQL",
   "main": "dist/index.js",

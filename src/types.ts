@@ -20,6 +20,7 @@ export interface CreateDBConfig extends BaseDBConfig {
 
 export interface MigrateDBConfig extends BaseDBConfig {
   readonly database: string
+  readonly tableName?: string
 }
 
 export type Logger = (msg: string) => void
